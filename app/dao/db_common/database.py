@@ -9,7 +9,7 @@ Unless required by applicable law or agreed to in writing, software distributed 
 """
 
 DB = 'metis'
-USER = 'metis'
+USER = 'root'
 PASSWD = 'metis@123'
-HOST = '127.0.0.1'
+HOST = 'metis-db'
 PORT = 3306

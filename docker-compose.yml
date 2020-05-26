@@ -1,0 +1,34 @@
+version: '2.1'
+services:
+  metis-db:
+    container_name: metis-db
+    restart: always
+    image: zhiyunmetis/metis-db
+    expose:
+      - '3306'
+    environment:
+      # MYSQL_DATABASE: metis
+      MYSQL_ROOT_PASSWORD: metis@123
+    # healthcheck:
+    #   test: "/usr/bin/mysql --user=root --password=metis@123 --execute \"SHOW DATABASES;\""
+    #   interval: 10s
+    #   timeout: 1s
+    #   retries: 3
+  metis-svr:
+    # depends_on:
+    #   metis-db:
+    #     condition: service_healthy
+    container_name: metis-svr
+    restart: always
+    image: js00070/metis-svr
+    expose:
+      - '8080'
+  metis-web:
+    container_name: metis-web
+    restart: always
+    image: js00070/metis-web
+    ports:
+      - '80:80'
+    environment:
+      ip: metis-svr
+      port: 8080
