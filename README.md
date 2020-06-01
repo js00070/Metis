@@ -6,3 +6,13 @@
 - 集成多指标检测
 - 改进特征工程
 
+## 编译
+需要先安装docker和docker-compose
+```bash
+sh build.sh
+```
+
+## 运行
+```bash
+docker-compose up -d
+```
