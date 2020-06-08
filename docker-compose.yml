@@ -32,3 +32,9 @@ services:
     environment:
       ip: metis-svr
       port: 8080
+  metis-influxdb:
+    container_name: metis-influxdb
+    restart: always
+    image: influxdb:latest
+    expose:
+      - '8086'
