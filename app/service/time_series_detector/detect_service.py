@@ -162,19 +162,25 @@ class DetectService(object):
         # if ret_code != OP_SUCCESS:
         #     return build_ret_data(ret_code, ret_data)
 
+        ret_code, ret_data = 0,{}
+        attr = data["attrIds"][0]
+
         # 改为从influxDB中读取dataA、dataB、dataC
-        data["dataA"], data["dataB"], data["dataC"] = self.get_dataABC(data["time"],data["attrId"],data["viewId"])
-        # print([data["dataA"], data["dataB"], data["dataC"]])
-        
-        ret_code, ret_data = self.detect_obj.value_predict(data)
+        for attrId in data["attrIds"]:
+            data["dataA"], data["dataB"], data["dataC"] = self.get_dataABC(data["time"],attrId,data["viewId"])
+            # print([data["dataA"], data["dataB"], data["dataC"]])
+            ret_code, ret_data = self.detect_obj.value_predict(data)
+            if ret_data["ret"] == 0:
+                attr = attrId
+                break
 
        
         if ret_code == TSD_OP_SUCCESS and ret_data["ret"] == 0:
             anomaly_params = {
                 "view_id": data["viewId"],
                 "view_name": data["viewId"],
-                "attr_id": data["attrId"],
-                "attr_name": data["attrId"],
+                "attr_id": attr,
+                "attr_name": attr,
                 "time": data["time"],
                 "data_c": data["dataC"],
                 "data_b": data["dataB"],
@@ -188,16 +194,22 @@ class DetectService(object):
         # if ret_code != OP_SUCCESS:
         #     return build_ret_data(ret_code, ret_data)
         
+        ret_code, ret_data = 0,{}
+        attr = data["attrIds"][0]
         # 改为从influxDB中读取dataA、dataB、dataC
-        data["dataA"], data["dataB"], data["dataC"] = self.get_dataABC(data["time"],data["attrId"],data["viewId"])
-        # print([data["dataA"], data["dataB"], data["dataC"]])
-        ret_code, ret_data = self.detect_obj.rate_predict(data)
+        for attrId in data["attrIds"]:
+            data["dataA"], data["dataB"], data["dataC"] = self.get_dataABC(data["time"],attrId,data["viewId"])
+            ret_code, ret_data = self.detect_obj.rate_predict(data)
+            if ret_data["ret"] == 0:
+                attr = attrId
+                break
+        
         if ret_code == TSD_OP_SUCCESS and ret_data["ret"] == 0:
             anomaly_params = {
                 "view_id": data["viewId"],
                 "view_name": data["viewId"],
-                "attr_id": data["attrId"],
-                "attr_name": data["attrId"],
+                "attr_id": attr,
+                "attr_name": attr,
                 "time": data["time"],
                 "data_c": data["dataC"],
                 "data_b": data["dataB"],

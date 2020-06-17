@@ -27,10 +27,10 @@ docker-compose up -d
 * 功能说明：根据参考数据检测最近一个数据点是否异常
 * 请求参数request：
 	
-```
+```json
 {
     "viewId":"m01",
-    "attrId":"p1",
+    "attrIds":["p1"],
     "window":180,
     "time":"2018-10-17 17:28:00"
 }
@@ -41,13 +41,13 @@ docker-compose up -d
 | 名称  | 类型 |必填| 默认值 | 说明 |
 | --- | --- | --- |---- | --- |
 | viewId| string| 是|m01|指标集ID, 即influxdb中的measurement名 |
-| attrId|  string| 是| p1|指标ID, 即influxdb中对应表的field名 |
+| attrIds|  string| 是| p1|指标ID的列表, 即influxdb中对应表的field名的list |
 | window|  int| 是| 无|窗口值，目前支持180|
 | time|  string| 是| 无|待检测点的时间标识，即dataA的最后一个点，格式："yyyy-MM-dd HH:mm:ss"|
 
 
 * 详情参数response：
-```
+```json
 {
     "code":0,
     "msg":"操作成功",
@@ -74,11 +74,12 @@ docker-compose up -d
 * 功能说明：根据参考数据检测最近一个数据点是否异常
 * 请求参数request：
 	
-```
+```json
 {
     "viewId":"m01",
-    "attrId":"p1",
+    "attrIds":["p1"],
     "window":180,
+    "isMultiDimension": false,
     "time":"2018-10-17 17:28:00"
 }
 ```
@@ -88,13 +89,13 @@ docker-compose up -d
 | 名称  | 类型 |必填| 默认值 | 说明 |
 | --- | --- | --- |---- | --- |
 | viewId| string| 是|m01|指标集ID, 即influxdb中的measurement名 |
-| attrId|  string| 是| p1|指标ID, 即influxdb中对应表的field名 |
+| attrIds|  string| 是| p1|指标ID的列表, 即influxdb中对应表的field名的list |
 | window|  int| 是| 无|窗口值，目前支持180|
 | time|  string| 是| 无|待检测点的时间标识，即dataA的最后一个点，格式："yyyy-MM-dd HH:mm:ss"|
 
 
 * 详情参数response：
-```
+```json
 {
     "code":0,
     "msg":"操作成功",
@@ -120,7 +121,7 @@ docker-compose up -d
 ### 异常样例:
 
 ```bash
-curl -X POST localhost/PredictValue -d '{"viewId":"m01","attrId":"p1", "window":180, "time":"2016-10-18 02:28:00"}'
+curl -X POST localhost/PredictRate -d '{"viewId":"m01","attrIds":["p1","p2","p3","p4","p5"], "window":180, "time":"2016-10-18 02:28:00"}'
 
 {"msg": "\u64cd\u4f5c\u6210\u529f", "code": 0, "data": {"p": "0.0014255302", "ret": 0}}
 
