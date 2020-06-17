@@ -41,7 +41,7 @@ docker-compose up -d
 | 名称  | 类型 |必填| 默认值 | 说明 |
 | --- | --- | --- |---- | --- |
 | viewId| string| 是|m01|指标集ID, 即influxdb中的measurement名 |
-| attrIds|  string| 是| p1|指标ID的列表, 即influxdb中对应表的field名的list |
+| attrIds| list | 是| p1|指标ID的列表, 即influxdb中对应表的field名的list |
 | window|  int| 是| 无|窗口值，目前支持180|
 | time|  string| 是| 无|待检测点的时间标识，即dataA的最后一个点，格式："yyyy-MM-dd HH:mm:ss"|
 
@@ -79,7 +79,6 @@ docker-compose up -d
     "viewId":"m01",
     "attrIds":["p1"],
     "window":180,
-    "isMultiDimension": false,
     "time":"2018-10-17 17:28:00"
 }
 ```
@@ -89,7 +88,7 @@ docker-compose up -d
 | 名称  | 类型 |必填| 默认值 | 说明 |
 | --- | --- | --- |---- | --- |
 | viewId| string| 是|m01|指标集ID, 即influxdb中的measurement名 |
-| attrIds|  string| 是| p1|指标ID的列表, 即influxdb中对应表的field名的list |
+| attrIds| list| 是| p1|指标ID的列表, 即influxdb中对应表的field名的list |
 | window|  int| 是| 无|窗口值，目前支持180|
 | time|  string| 是| 无|待检测点的时间标识，即dataA的最后一个点，格式："yyyy-MM-dd HH:mm:ss"|
 
