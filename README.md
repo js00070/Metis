@@ -16,3 +16,112 @@ sh build.sh
 ```bash
 docker-compose up -d
 ```
+
+## 接口说明
+
+### 一、HTTP接口
+
+#### 1、量值检测
+
+* API： POST /{ip}:{port}/PredictValue
+* 功能说明：根据参考数据检测最近一个数据点是否异常
+* 请求参数request：
+	
+```
+{
+    "viewId":"m01",
+    "attrId":"p1",
+    "window":180,
+    "time":"2018-10-17 17:28:00"
+}
+```
+
+* request字段说明：
+
+| 名称  | 类型 |必填| 默认值 | 说明 |
+| --- | --- | --- |---- | --- |
+| viewId| string| 是|m01|指标集ID, 即influxdb中的measurement名 |
+| attrId|  string| 是| p1|指标ID, 即influxdb中对应表的field名 |
+| window|  int| 是| 无|窗口值，目前支持180|
+| time|  string| 是| 无|待检测点的时间标识，即dataA的最后一个点，格式："yyyy-MM-dd HH:mm:ss"|
+
+
+* 详情参数response：
+```
+{
+    "code":0,
+    "msg":"操作成功",
+    "data":
+    {
+        "ret":0,
+        "p":"0.05",
+    }
+}
+```
+
+* response 字段说明：
+
+| 名称  | 类型  | 说明 |
+|---|---|---|
+| code | int | 返回码。0:成功；非0:失败 |
+| msg | string | 返回消息 |
+| ret | int | 检测结果是否异常。0:异常；1:正常 |
+| p | string | 概率值，值越小，判定为异常的置信度越高 |
+
+#### 2、率值检测
+
+* API： POST /{ip}:{port}/PredictRate
+* 功能说明：根据参考数据检测最近一个数据点是否异常
+* 请求参数request：
+	
+```
+{
+    "viewId":"m01",
+    "attrId":"p1",
+    "window":180,
+    "time":"2018-10-17 17:28:00"
+}
+```
+
+* request字段说明：
+
+| 名称  | 类型 |必填| 默认值 | 说明 |
+| --- | --- | --- |---- | --- |
+| viewId| string| 是|m01|指标集ID, 即influxdb中的measurement名 |
+| attrId|  string| 是| p1|指标ID, 即influxdb中对应表的field名 |
+| window|  int| 是| 无|窗口值，目前支持180|
+| time|  string| 是| 无|待检测点的时间标识，即dataA的最后一个点，格式："yyyy-MM-dd HH:mm:ss"|
+
+
+* 详情参数response：
+```
+{
+    "code":0,
+    "msg":"操作成功",
+    "data":
+    {
+        "ret":0,
+        "p":"0.05",
+    }
+}
+```
+
+* response 字段说明：
+
+| 名称  | 类型  | 说明 |
+|---|---|---|
+| code | int | 返回码。0:成功；非0:失败 |
+| msg | string | 返回消息 |
+| ret | int | 检测结果是否异常。0:异常；1:正常 |
+| p | string | 概率值，值越小，判定为异常的置信度越高 |
+
+## 数据
+
+### 异常样例:
+
+```bash
+curl -X POST localhost/PredictValue -d '{"viewId":"m01","attrId":"p1", "window":180, "time":"2016-10-18 02:28:00"}'
+
+{"msg": "\u64cd\u4f5c\u6210\u529f", "code": 0, "data": {"p": "0.0014255302", "ret": 0}}
+
+```

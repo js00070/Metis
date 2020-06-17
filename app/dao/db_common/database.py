@@ -13,3 +13,9 @@ USER = 'root'
 PASSWD = 'metis@123'
 HOST = 'metis-db'
 PORT = 3306
+
+INFLUX_DB_NAME = 'netman'
+INFLUX_USER = 'root'
+INFLUX_PASSWD = 'root'
+INFLUX_HOST = 'metis-influxdb'
+INFLUX_PORT = 8086

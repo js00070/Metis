@@ -82,7 +82,7 @@ class Detect(object):
         else:
             model_name = MODEL_PATH + "xgb_default_model"
         combined_data = data["dataC"] + "," + data["dataB"] + "," + data["dataA"]
-        time_series = map(int, combined_data.split(','))
+        time_series = map(float, combined_data.split(','))
         if "window" in data:
             window = data["window"]
         else:

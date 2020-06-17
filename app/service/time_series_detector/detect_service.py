@@ -14,6 +14,7 @@ import threading
 from app.dao.time_series_detector import anomaly_op
 from app.dao.time_series_detector import sample_op
 from app.dao.time_series_detector import train_op
+from app.dao.db_common import database
 from time_series_detector.algorithm import xgboosting
 from time_series_detector import detect
 from app.common.errorcode import *
@@ -21,6 +22,11 @@ from app.common.common import *
 from time_series_detector.common.tsd_errorcode import *
 MODEL_PATH = os.path.join(os.path.dirname(__file__), './model/')
 
+import influxdb
+
+import logging
+
+logging.basicConfig(filename='log.txt', level=logging.INFO)
 
 class DetectService(object):
 
@@ -28,6 +34,33 @@ class DetectService(object):
         self.sample_op_obj = sample_op.SampleOperation()
         self.anomaly_op_obj = anomaly_op.AbnormalOperation()
         self.detect_obj = detect.Detect()
+        self.client = influxdb.InfluxDBClient(database.INFLUX_HOST, database.INFLUX_PORT,
+             database.INFLUX_USER, database.INFLUX_PASSWD, database.INFLUX_DB_NAME)
+
+    # 获取一个时间窗口里的单指标数据
+    def get_data(self,begin,end,col_name = 'p1',table_name='m01'):
+        begin_str = begin.strftime('%Y-%m-%d %H:%M:%S')
+        end_str = end.strftime('%Y-%m-%d %H:%M:%S')
+        # 取名为value_name的指标
+        query_res = self.client.query("select {} from {} where time >= '{}' and time <= '{}'".format(col_name,table_name,begin_str,end_str))
+        logging.info(query_res)
+        data = [str(x[1]) for x in query_res.raw['series'][0]['values']]
+        return ','.join(data)
+
+
+    # 获取最近180分钟、一天前、一周前的时间数据
+    def get_dataABC(self,current_time, col_name = 'p1',table_name='m01'):
+        import datetime
+        t = datetime.datetime.strptime(current_time, "%Y-%m-%d %H:%M:%S")
+        day_ago = t - datetime.timedelta(days=1)
+        week_ago = t - datetime.timedelta(days=7)
+        beginA = t - datetime.timedelta(minutes=180)
+        endA = t
+        beginB = day_ago - datetime.timedelta(minutes=180)
+        endB = day_ago + datetime.timedelta(minutes=180)
+        beginC = week_ago - datetime.timedelta(minutes=180)
+        endC = week_ago + datetime.timedelta(minutes=180)
+        return self.get_data(beginA,endA,col_name,table_name),self.get_data(beginB,endB,col_name,table_name),self.get_data(beginC,endC,col_name,table_name)
 
     def __generate_model(self, data, task_id):
         """
@@ -125,16 +158,23 @@ class DetectService(object):
         return OP_SUCCESS, ""
 
     def value_predict(self, data):
-        ret_code, ret_data = self.__check_param(data)
-        if ret_code != OP_SUCCESS:
-            return build_ret_data(ret_code, ret_data)
+        # ret_code, ret_data = self.__check_param(data)
+        # if ret_code != OP_SUCCESS:
+        #     return build_ret_data(ret_code, ret_data)
+
+        # 改为从influxDB中读取dataA、dataB、dataC
+        data["dataA"], data["dataB"], data["dataC"] = self.get_dataABC(data["time"],data["attrId"],data["viewId"])
+        # print([data["dataA"], data["dataB"], data["dataC"]])
+        
         ret_code, ret_data = self.detect_obj.value_predict(data)
+
+       
         if ret_code == TSD_OP_SUCCESS and ret_data["ret"] == 0:
             anomaly_params = {
                 "view_id": data["viewId"],
-                "view_name": data["viewName"],
+                "view_name": data["viewId"],
                 "attr_id": data["attrId"],
-                "attr_name": data["attrName"],
+                "attr_name": data["attrId"],
                 "time": data["time"],
                 "data_c": data["dataC"],
                 "data_b": data["dataB"],
@@ -144,16 +184,20 @@ class DetectService(object):
         return build_ret_data(ret_code, ret_data)
 
     def rate_predict(self, data):
-        ret_code, ret_data = self.__check_param(data)
-        if ret_code != OP_SUCCESS:
-            return build_ret_data(ret_code, ret_data)
-        ret_data, ret_data = self.detect_obj.rate_predict(data)
+        # ret_code, ret_data = self.__check_param(data)
+        # if ret_code != OP_SUCCESS:
+        #     return build_ret_data(ret_code, ret_data)
+        
+        # 改为从influxDB中读取dataA、dataB、dataC
+        data["dataA"], data["dataB"], data["dataC"] = self.get_dataABC(data["time"],data["attrId"],data["viewId"])
+        # print([data["dataA"], data["dataB"], data["dataC"]])
+        ret_code, ret_data = self.detect_obj.rate_predict(data)
         if ret_code == TSD_OP_SUCCESS and ret_data["ret"] == 0:
             anomaly_params = {
                 "view_id": data["viewId"],
-                "view_name": data["viewName"],
+                "view_name": data["viewId"],
                 "attr_id": data["attrId"],
-                "attr_name": data["attrName"],
+                "attr_name": data["attrId"],
                 "time": data["time"],
                 "data_c": data["dataC"],
                 "data_b": data["dataB"],
