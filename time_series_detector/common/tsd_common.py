@@ -57,19 +57,34 @@ def normalize_time_series(split_time_series):
     :param split_time_series: [[data_c_left], [data_c_right], [data_b_left], [data_b_right], [data_a]]
     :return: all list / mean(split_time_series)
     """
-    value = np.mean(split_time_series[4])
+    time_series0 = []
+    for item in split_time_series[0]:
+        time_series0.append(float(item))
+    time_series1 = []
+    for item in split_time_series[1]:
+        time_series1.append(float(item))
+    time_series2 = []
+    for item in split_time_series[2]:
+        time_series2.append(float(item))
+    time_series3 = []
+    for item in split_time_series[3]:
+        time_series3.append(float(item))
+    time_series4 = []
+    for item in split_time_series[4]:
+        time_series4.append(float(item))
+    value = np.mean(time_series4)
     if value > 1:
-        normalized_data_c_left = list(split_time_series[0] / value)
-        normalized_data_c_right = list(split_time_series[1] / value)
-        normalized_data_b_left = list(split_time_series[2] / value)
-        normalized_data_b_right = list(split_time_series[3] / value)
-        normalized_data_a = list(split_time_series[4] / value)
+        normalized_data_c_left = list(time_series0 / value)
+        normalized_data_c_right = list(time_series1 / value)
+        normalized_data_b_left = list(time_series2 / value)
+        normalized_data_b_right = list(time_series3 / value)
+        normalized_data_a = list(time_series4 / value)
     else:
-        normalized_data_c_left = split_time_series[0]
-        normalized_data_c_right = split_time_series[1]
-        normalized_data_b_left = split_time_series[2]
-        normalized_data_b_right = split_time_series[3]
-        normalized_data_a = split_time_series[4]
+        normalized_data_c_left = time_series0
+        normalized_data_c_right = time_series1
+        normalized_data_b_left = time_series2
+        normalized_data_b_right = time_series3
+        normalized_data_a = time_series4
     normalized_split_time_series = [
         normalized_data_c_left,
         normalized_data_c_right,
@@ -88,10 +103,13 @@ def normalize_time_series_by_max_min(split_time_series):
     :return: max_min_normalized time_series
     """
     time_series = split_time_series[0] + split_time_series[1][1:] + split_time_series[2] + split_time_series[3][1:] + split_time_series[4]
-    max_value = np.max(time_series)
-    min_value = np.min(time_series)
+    time_series1 = []
+    for item in time_series:
+        time_series1.append(float(item))
+    max_value = np.max(time_series1)
+    min_value = np.min(time_series1)
     normalized_time_series = [0.0]*len(time_series)
     if max_value - min_value > 0:
-        normalized_time_series = list((np.array(time_series) - min_value) / float(max_value - min_value))
+        normalized_time_series = list((np.array(time_series1) - min_value) / float(max_value - min_value))
 
     return normalized_time_series
