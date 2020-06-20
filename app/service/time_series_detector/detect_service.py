@@ -25,6 +25,7 @@ MODEL_PATH = os.path.join(os.path.dirname(__file__), './model/')
 import influxdb
 
 import logging
+import time
 
 logging.basicConfig(filename='log.txt', level=logging.INFO)
 
@@ -40,9 +41,11 @@ class DetectService(object):
     # 获取一个时间窗口里的单指标数据
     def get_data(self,begin,end,col_name = 'p1',table_name='m01'):
         begin_str = begin.strftime('%Y-%m-%d %H:%M:%S')
+        
         end_str = end.strftime('%Y-%m-%d %H:%M:%S')
         # 取名为value_name的指标
-        query_res = self.client.query("select {} from {} where time >= '{}' and time <= '{}'".format(col_name,table_name,begin_str,end_str))
+        query_res = self.client.query("select {} from {} where time >= {} and time <= {}".format(col_name,table_name,int(time.mktime(begin.timetuple())*1000),int(time.mktime(end.timetuple())*1000)))
+        logging.info("select {} from {} where time >= {} and time <= {}".format(col_name,table_name,int(time.mktime(begin.timetuple())*1000),int(time.mktime(end.timetuple())*1000)))
         logging.info(query_res)
         data = [str(x[1]) for x in query_res.raw['series'][0]['values']]
         return ','.join(data)

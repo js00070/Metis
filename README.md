@@ -1,20 +1,46 @@
 # 读我
 
 - 补充dockerfile以及docker-compose.yml (已完成)
-- 集成influxDB以及导入csv的服务至docker-compose中(初步完成)
+- 集成influxDB以及导入csv的服务至docker-compose中(完成)
 - 修改所有相关接口，改成从influxDB中读取数据(已完成)
 - 集成多指标检测(初步完成)
 - 改进特征工程
+- 集成prophet
 
 ## 编译
-需要先安装docker和docker-compose
+需要先安装nodejs(版本大于等于10)和docker和docker-compose
 ```bash
+# 先进入uweb目录执行
+npm install
+
+# 然后回到根目录执行
 sh build.sh
 ```
 
 ## 运行
 ```bash
 docker-compose up -d
+```
+
+## 使用说明
+
+### 导入csv
+打开localhost:8080, 上传new_data.csv文件
+
+### 多指标异常检测
+
+- 异常样例
+```bash
+curl -X POST localhost/PredictRate -d '{"viewId":"measurementName","attrIds":["p1","p2","p3","p4","p5"], "window":180, "time":"2016-10-18 02:28:00"}'
+
+{"msg": "\u64cd\u4f5c\u6210\u529f", "code": 0, "data": {"p": "0.0014255302", "ret": 0}}
+```
+
+- 非异常样例
+```bash
+curl -X POST localhost/PredictRate -d '{"viewId":"measurementName","attrIds":["p1","p2","p3","p4","p5"], "window":180, "time":"2016-10-16 02:28:00"}'
+
+{"msg": "\u64cd\u4f5c\u6210\u529f", "code": 0, "data": {"p": "1", "ret": 1}}
 ```
 
 ## 接口说明
@@ -120,7 +146,7 @@ docker-compose up -d
 ### 异常样例:
 
 ```bash
-curl -X POST localhost/PredictRate -d '{"viewId":"m01","attrIds":["p1","p2","p3","p4","p5"], "window":180, "time":"2016-10-18 02:28:00"}'
+curl -X POST localhost/PredictRate -d '{"viewId":"measurementName","attrIds":["p1","p2","p3","p4","p5"], "window":180, "time":"2016-10-18 02:28:00"}'
 
 {"msg": "\u64cd\u4f5c\u6210\u529f", "code": 0, "data": {"p": "0.0014255302", "ret": 0}}
 

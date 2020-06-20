@@ -40,3 +40,13 @@ services:
       - '8086'
     ports:
       - '8086:8086'
+  metis-csv2influxdb:
+    container_name: metis-csv2influxdb
+    restart: always
+    image: js00070/metis-csv2influxdb
+    expose:
+      - '8080'
+    ports:
+      - '8080:8080'
+    environment:
+      HOST: http://metis-influxdb:8086

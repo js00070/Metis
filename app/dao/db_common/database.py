@@ -14,7 +14,7 @@ PASSWD = 'metis@123'
 HOST = 'metis-db'
 PORT = 3306
 
-INFLUX_DB_NAME = 'netman'
+INFLUX_DB_NAME = 'metis'
 INFLUX_USER = 'root'
 INFLUX_PASSWD = 'root'
 INFLUX_HOST = 'metis-influxdb'
