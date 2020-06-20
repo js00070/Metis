@@ -4,8 +4,8 @@
 - 集成influxDB以及导入csv的服务至docker-compose中(完成)
 - 修改所有相关接口，改成从influxDB中读取数据(已完成)
 - 集成多指标检测(初步完成)
-- 改进特征工程
-- 集成prophet
+- 改进特征工程(已完成)
+- 集成prophet(已完成)
 
 ## 编译
 需要先安装nodejs(版本大于等于10)和docker和docker-compose
